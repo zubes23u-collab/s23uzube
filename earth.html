@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>실시간 지진 맵</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        #map { height: 600px; width: 100%; }
+    </style>
+</head>
+<body>
+
+    <div id="map"></div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // 1. 지도 초기화 (전 세계가 보이도록 설정)
+        const map = L.map('map').setView([20, 0], 2);
+
+        // 2. 배경 지도 타일 설정 (OpenStreetMap 사용)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        // 3. USGS API 데이터 가져오기
+        const earthquakeApi = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson";
+
+        fetch(earthquakeApi)
+            .then(response => response.json())
+            .then(data => {
+                // 4. GeoJSON 데이터를 지도에 표시
+                L.geoJSON(data, {
+                    pointToLayer: function (feature, latlng) {
+                        // 지진 규모에 따라 원의 크기 조절
+                        const mag = feature.properties.mag;
+                        return L.circleMarker(latlng, {
+                            radius: mag * 3,
+                            fillColor: mag > 5 ? "red" : "orange",
+                            color: "#000",
+                            weight: 1,
+                            opacity: 1,
+                            fillOpacity: 0.8
+                        });
+                    },
+                    onEachFeature: function (feature, layer) {
+                        // 클릭 시 정보 팝업
+                        layer.bindPopup(`<h3>규모: ${feature.properties.mag}</h3><p>${feature.properties.place}</p>`);
+                    }
+                }).addTo(map);
+            });
+    </script>
+</body>
+</html>
