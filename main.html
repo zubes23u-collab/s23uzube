@@ -6,85 +6,158 @@
     <title>AI 지진예측모델 - 메인</title>
     <style>
         body {
-            margin: 0; padding: 0;
+            margin: 0;
+            padding: 0;
             font-family: 'Malgun Gothic', sans-serif;
-            background-color: #162447; color: #ffffff;
-            display: flex; height: 100vh; overflow: hidden;
+            background-color: #162447;
+            color: #ffffff;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
         }
 
         /* 왼쪽 사이드바 레이아웃 */
         .sidebar {
-            width: 320px; background-color: #1f4068;
-            padding: 20px; box-shadow: 4px 0 15px rgba(0,0,0,0.3);
-            display: flex; flex-direction: column;
+            width: 320px;
+            background-color: #1f4068;
+            padding: 20px;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
             overflow-y: auto;
         }
         .sidebar h2 {
-            font-size: 1.2rem; color: #4ecca3;
-            margin-bottom: 20px; padding-bottom: 10px;
+            font-size: 1.2rem;
+            color: #4ecca3;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
             border-bottom: 2px solid rgba(255,255,255,0.1);
         }
-
-        /* 학생 리스트 스타일 */
-        .student-list { list-style: none; padding: 0; margin: 0 0 30px 0; }
-        .student-item { margin-bottom: 10px; }
+        .student-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .student-item {
+            margin-bottom: 10px;
+        }
         .student-link {
-            display: block; padding: 12px 15px;
+            display: block;
+            padding: 12px 15px;
             background-color: rgba(255, 255, 255, 0.05);
-            color: #cbd5e1; text-decoration: none;
-            border-radius: 8px; font-size: 0.9rem;
-            transition: all 0.3s ease; white-space: nowrap;
-            overflow: hidden; text-overflow: ellipsis;
+            color: #cbd5e1;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-        .student-link:hover { background-color: #e43f5a; color: #ffffff; transform: translateX(5px); }
+        .student-link:hover {
+            background-color: #e43f5a;
+            color: #ffffff;
+            transform: translateX(5px);
+        }
 
-        /* 메뉴 구역 */
-        .menu-section { margin-bottom: 20px; }
-        .menu-list { list-style: none; padding: 0; margin: 0 0 20px 0; }
+        /* 추가 메뉴 구역 (게임시작 / 지진모델링) */
+        .menu-section {
+            margin-bottom: 20px;
+        }
+        .menu-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px 0;
+        }
+        .menu-item {
+            margin-bottom: 10px;
+        }
         .menu-link {
-            display: block; padding: 12px 15px; background-color: #4ecca3;
-            color: #162447; text-decoration: none; border-radius: 8px;
-            font-size: 0.95rem; font-weight: bold; text-align: center;
-            transition: all 0.3s ease; margin-bottom: 10px;
+            display: block;
+            padding: 12px 15px;
+            background-color: #4ecca3;
+            color: #162447;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            text-align: center;
+            transition: all 0.3s ease;
         }
-        .menu-link:hover { background-color: #3fae8c; transform: translateX(5px); }
-
-        /* --- 방명록 스타일 추가 --- */
-        .guestbook-section {
-            margin-top: auto; /* 사이드바 맨 아래로 밀기 */
-            padding-top: 20px;
-            border-top: 2px solid rgba(255,255,255,0.1);
+        .menu-link:hover {
+            background-color: #3fae8c;
+            transform: translateX(5px);
         }
-        .guestbook-form input, .guestbook-form textarea {
-            width: 100%; box-sizing: border-box;
-            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
-            color: white; padding: 8px; border-radius: 5px; margin-bottom: 5px;
-            font-family: inherit;
-        }
-        .guestbook-form button {
-            width: 100%; padding: 8px; background: #e43f5a; border: none;
-            color: white; border-radius: 5px; cursor: pointer; font-weight: bold;
-        }
-        .guestbook-form button:hover { background: #b93248; }
-        .guest-list {
-            margin-top: 15px; max-height: 200px; overflow-y: auto;
-            font-size: 0.85rem; background: rgba(0,0,0,0.2); border-radius: 5px;
-        }
-        .guest-item { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .guest-name { color: #4ecca3; font-weight: bold; margin-bottom: 3px; }
-        /* ------------------------- */
 
         /* 오른쪽 메인 콘텐츠 영역 */
         .main-content {
-            flex: 1; padding: 40px;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center; overflow-y: auto;
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
         }
-        .main-content h1 { font-size: 2rem; color: #ffffff; margin-bottom: 30px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .main-content h1 {
+            font-size: 2rem;
+            color: #ffffff;
+            margin-bottom: 30px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
         .map-container {
-            width: 100%; max-width: 900px;
+            width: 100%;
+            max-width: 900px;
             background: rgba(255, 255, 255, 0.05);
-            padding: 15px; border-radius: 12px;
+            padding: 15px;
+            border-radius: 12px;
             box-shadow: 0 8px 24px rgba(0,0,0,0.2);
         }
-        .map-image { width: 100%; height: auto; border-radius: 8px; display: block;
+        .map-image {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 왼쪽 사이드바: 수정 완료된 학생 프로젝트 리스트 -->
+    <nav class="sidebar">
+
+        <!-- 새로 추가된 메뉴: 게임시작 / 지진모델링 -->
+        <div class="menu-section">
+            <h2>메뉴</h2>
+            <ul class="menu-list">
+                <li class="menu-item"><a href="game.html" class="menu-link">🎮 게임시작</a></li>
+                <li class="menu-item"><a href="earth.html" class="menu-link">🌍 지진모델링</a></li>
+            </ul>
+        </div>
+
+        <h2>학생별 AI 예측모델</h2>
+        <ul class="student-list">
+            <li class="student-item"><a href="https://wwwwwa.vercel.app" target="_blank" rel="noopener noreferrer" class="student-link">wwwwwa.vercel.app</a></li>
+            <li class="student-item"><a href="https://gf-theta-one.vercel.app" target="_blank" rel="noopener noreferrer" class="student-link">gf-theta-one.vercel.app</a></li>
+            <li class="student-item"><a href="https://geniuschaebre.vercel.app" target="_blank" rel="noopener noreferrer" class="student-link">geniuschaebre.vercel.app</a></li>
+            <li class="student-item"><a href="https://iwantgirlfriend.vercel.app" target="_blank" rel="noopener noreferrer" class="student-link">iwantgirlfriend.vercel.app</a></li>
+            <li class="student-item"><a href="https://deas-olive.vercel.app" target="_blank" rel="noopener noreferrer" class="student-link">deas-olive.vercel.app</a></li>
+            <li class="student-item"><a href="https://scaling-doodle-cnnl.vercel.app" target="_blank" rel="noopener noreferrer" class="student-link">scaling-doodle-cnnl.vercel.app</a></li>
+            <li class="student-item"><a href="https://bnd.vercel.app" target="_blank" rel="noopener noreferrer" class="student-link">bnd.vercel.app</a></li>
+            <li class="student-item"><a href="https://cherry-shrimp.vercel.app" target="_blank" rel="noopener noreferrer" class="student-link">cherry-shrimp.vercel.app</a></li>
+            <li class="student-item"><a href="https://you-and-i-91zi.vercel.app" target="_blank" rel="noopener noreferrer" class="student-link">you-and-i-91zi.vercel.app</a></li>
+            <li class="student-item"><a href="https://wjwkdth-gamma.vercel.app" target="_blank" rel="noopener noreferrer" class="student-link">wjwkdth-gamma.vercel.app</a></li>
+            <li class="student-item"><a href="https://lazy-jade.vercel.app" target="_blank" rel="noopener noreferrer" class="student-link">lazy-jade.vercel.app</a></li>
+        </ul>
+    </nav>
+
+    <!-- 오른쪽 콘텐츠 영역 -->
+    <main class="main-content">
+        <h1>세계 주요 지진 분포도</h1>
+        <div class="map-container">
+            <img src="https://unsplash.com" alt="세계지도" class="map-image">
+        </div>
+    </main>
+
+</body>
+</html>
