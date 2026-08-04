@@ -1,53 +1,117 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>실시간 지진 맵</title>
-    <!-- Leaflet CSS -->
+    <title>USGS Earthquake Tracker</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        #map { height: 600px; width: 100%; }
+        body { margin: 0; display: flex; height: 100vh; font-family: sans-serif; }
+        
+        /* 왼쪽 사이드바 스타일 */
+        #sidebar {
+            width: 350px;
+            height: 100%;
+            overflow-y: auto;
+            border-right: 1px solid #ccc;
+            background-color: #f8f9fa;
+        }
+        .sidebar-header { padding: 15px; background: #334155; color: white; position: sticky; top: 0; z-index: 10; }
+        .eq-item { 
+            padding: 15px; border-bottom: 1px solid #ddd; cursor: pointer; 
+            display: flex; align-items: center; transition: background 0.2s;
+        }
+        .eq-item:hover { background-color: #e2e8f0; }
+        
+        /* 규모 표시 동그라미 */
+        .mag-badge {
+            width: 45px; height: 45px; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; margin-right: 15px; flex-shrink: 0;
+            color: white;
+        }
+
+        /* 오른쪽 지도 스타일 */
+        #map { flex: 1; height: 100%; }
     </style>
 </head>
 <body>
 
+    <div id="sidebar">
+        <div class="sidebar-header">
+            <h3 style="margin:0">USGS 지진 목록</h3>
+            <div id="count" style="font-size: 0.9em; opacity: 0.8;">데이터 로딩 중...</div>
+        </div>
+        <div id="eq-list">
+            <!-- 리스트 아이템들이 여기에 동적으로 추가됨 -->
+        </div>
+    </div>
+
     <div id="map"></div>
 
-    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // 1. 지도 초기화 (전 세계가 보이도록 설정)
+        // 1. 지도 초기화
         const map = L.map('map').setView([20, 0], 2);
-
-        // 2. 배경 지도 타일 설정 (OpenStreetMap 사용)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap'
         }).addTo(map);
 
-        // 3. USGS API 데이터 가져오기
-        const earthquakeApi = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson";
+        const apiURL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson";
 
-        fetch(earthquakeApi)
-            .then(response => response.json())
+        // 규모에 따른 색상 함수
+        function getColor(mag) {
+            return mag > 5 ? '#ef4444' : // 빨강
+                   mag > 4 ? '#f97316' : // 주황
+                   mag > 2 ? '#eab308' : // 노랑
+                             '#22c55e';   // 초록
+        }
+
+        fetch(apiURL)
+            .then(res => res.json())
             .then(data => {
-                // 4. GeoJSON 데이터를 지도에 표시
-                L.geoJSON(data, {
-                    pointToLayer: function (feature, latlng) {
-                        // 지진 규모에 따라 원의 크기 조절
-                        const mag = feature.properties.mag;
-                        return L.circleMarker(latlng, {
-                            radius: mag * 3,
-                            fillColor: mag > 5 ? "red" : "orange",
-                            color: "#000",
-                            weight: 1,
-                            opacity: 1,
-                            fillOpacity: 0.8
-                        });
-                    },
-                    onEachFeature: function (feature, layer) {
-                        // 클릭 시 정보 팝업
-                        layer.bindPopup(`<h3>규모: ${feature.properties.mag}</h3><p>${feature.properties.place}</p>`);
-                    }
-                }).addTo(map);
+                const features = data.features;
+                document.getElementById('count').innerText = `${features.length} 개의 지진 발생 (최근 24시간)`;
+
+                const listContainer = document.getElementById('eq-list');
+
+                features.forEach(feature => {
+                    const props = feature.properties;
+                    const coords = feature.geometry.coordinates; // [경도, 위도, 깊이]
+                    const latlng = [coords[1], coords[0]];
+
+                    // --- 지도에 마커 추가 ---
+                    const marker = L.circleMarker(latlng, {
+                        radius: props.mag * 3,
+                        fillColor: getColor(props.mag),
+                        color: "#000", weight: 1, fillOpacity: 0.7
+                    }).addTo(map);
+                    
+                    marker.bindPopup(`<b>${props.place}</b><br>규모: ${props.mag}`);
+
+                    // --- 왼쪽 리스트 아이템 생성 ---
+                    const item = document.createElement('div');
+                    item.className = 'eq-item';
+                    
+                    // 시간 포맷팅
+                    const date = new Date(props.time).toLocaleTimeString();
+
+                    item.innerHTML = `
+                        <div class="mag-badge" style="background-color: ${getColor(props.mag)}">
+                            ${props.mag.toFixed(1)}
+                        </div>
+                        <div>
+                            <div style="font-weight:bold; font-size: 0.9em;">${props.place}</div>
+                            <div style="font-size: 0.8em; color: #666;">${date} | 깊이: ${coords[2]}km</div>
+                        </div>
+                    `;
+
+                    // 리스트 클릭 이벤트: 지도를 해당 위치로 이동
+                    item.onclick = () => {
+                        map.flyTo(latlng, 8); // 8레벨로 줌인하며 이동
+                        marker.openPopup();
+                    };
+
+                    listContainer.appendChild(item);
+                });
             });
     </script>
 </body>
