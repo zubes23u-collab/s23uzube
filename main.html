@@ -60,6 +60,35 @@
             transform: translateX(5px);
         }
 
+        /* 추가 메뉴 구역 (게임시작 / 지진모델링) */
+        .menu-section {
+            margin-bottom: 20px;
+        }
+        .menu-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px 0;
+        }
+        .menu-item {
+            margin-bottom: 10px;
+        }
+        .menu-link {
+            display: block;
+            padding: 12px 15px;
+            background-color: #4ecca3;
+            color: #162447;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .menu-link:hover {
+            background-color: #3fae8c;
+            transform: translateX(5px);
+        }
+
         /* 오른쪽 메인 콘텐츠 영역 */
         .main-content {
             flex: 1;
@@ -96,6 +125,16 @@
 
     <!-- 왼쪽 사이드바: 수정 완료된 학생 프로젝트 리스트 -->
     <nav class="sidebar">
+
+        <!-- 새로 추가된 메뉴: 게임시작 / 지진모델링 -->
+        <div class="menu-section">
+            <h2>메뉴</h2>
+            <ul class="menu-list">
+                <li class="menu-item"><a href="game.html" class="menu-link">🎮 게임시작</a></li>
+                <li class="menu-item"><a href="earth.html" class="menu-link">🌍 지진모델링</a></li>
+            </ul>
+        </div>
+
         <h2>학생별 AI 예측모델</h2>
         <ul class="student-list">
             <li class="student-item"><a href="https://wwwwwa.vercel.app" target="_blank" rel="noopener noreferrer" class="student-link">wwwwwa.vercel.app</a></li>
